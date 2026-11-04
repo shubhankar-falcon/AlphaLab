@@ -4,7 +4,8 @@ An educational Indian-equities quant research lab. It is designed around a
 reproducible demo, modular data feeds, independently testable financial logic,
 and CI quality gates.
 
-**v0.3 adds a monthly 12–1 momentum backtest in its own Streamlit page.**
+**v0.4 adds an optional Nifty 500 TRI benchmark comparison to the v0.3
+monthly 12–1 momentum backtest, while preserving the existing screener.**
 The main v0.2 stock screener is preserved, including both synthetic and real
 historical-data modes. There is no brokerage integration or live trading.
 
@@ -38,13 +39,15 @@ python -m pytest -v
 ## Project structure
 
 - `app.py` — v0.2 stock screener, the home page.
-- `pages/1_Backtesting_Lab.py` — v0.3 backtesting page.
+- `pages/1_Backtesting_Lab.py` — v0.4 backtest and benchmark comparison page.
 - `src/alphalab/data/` — reproducible demo and Yahoo historical-data adapters.
 - `src/alphalab/strategies/` — stock screening.
 - `src/alphalab/backtesting/engine.py` — reusable backtest engine.
+- `src/alphalab/backtesting/benchmark.py` — TRI CSV parsing and matched-date comparison.
 - `tests/` — fully offline automated unit tests.
 - `.github/workflows/ci.yml` — checks formatting, lint and tests on GitHub.
-- `docs/backtesting_v03.md` — full backtest methodology and assumptions.
+- `docs/backtesting_v03.md` — original backtest methodology and assumptions.
+- `docs/benchmark_v04.md` — benchmark CSV format, validation and method.
 
 ## What the first backtest means
 
@@ -66,7 +69,8 @@ Yahoo mode requests up to 5 years of daily data.
 - Closing-price execution is idealized; the data uses retrospectively adjusted
   closes. The cost approximation omits Indian statutory taxes, broker fees,
   actual bid-ask spreads, and real slippage.
-- No official Nifty 500 **total return** benchmark is integrated yet.
+- Official Nifty 500 **total return** comparison requires a user-provided NSE
+  CSV. No index return series is bundled, invented, or fetched automatically.
 - No walk-forward or out-of-sample validation has been done.
 - Yahoo market data via `yfinance` is for **personal research**; do not
   redistribute it as a public/commercial price-data service without a licence.
@@ -77,3 +81,15 @@ For the complete calculation specification, see `docs/backtesting_v03.md`.
 
 Education and personal market research only. Nothing in AlphaLab is trading
 advice, a prediction, or a system for accepting money or placing orders.
+
+
+## v0.4 — Benchmark comparison
+
+Backtesting Lab now supports a synthetic equal-weight **demo market proxy** and
+user-uploaded **official Nifty 500 Total Returns Index (TRI)** daily CSV(s) in
+Yahoo historical mode. Real benchmark comparisons are never manufactured from
+price-only indexes. Both series are normalized to the same starting capital and
+dates; return differences are descriptive, **not** proof of alpha.
+
+See [benchmark_v04.md](docs/benchmark_v04.md) for NSE CSV download steps,
+limitations and calculation details.

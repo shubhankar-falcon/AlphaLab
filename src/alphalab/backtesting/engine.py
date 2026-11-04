@@ -81,9 +81,7 @@ def _weights_for_rebalance(
     if not eligible.any():
         return {}, {}
     scores = matrix.iloc[recent_idx] / matrix.iloc[old_idx] - 1.0
-    scores = scores[eligible].dropna().sort_index().sort_values(
-        ascending=False, kind="stable"
-    )
+    scores = scores[eligible].dropna().sort_index().sort_values(ascending=False, kind="stable")
     chosen = scores.head(config.top_n)
     if chosen.empty:
         return {}, {}
@@ -127,12 +125,9 @@ def _rebalance_portfolio(
     fee = cost_rate * traded
     post_fee = nav - fee
     shares = {
-        ticker: weight * post_fee / float(closes[ticker])
-        for ticker, weight in weights.items()
+        ticker: weight * post_fee / float(closes[ticker]) for ticker, weight in weights.items()
     }
-    residual_cash = post_fee - sum(
-        shares[ticker] * float(closes[ticker]) for ticker in shares
-    )
+    residual_cash = post_fee - sum(shares[ticker] * float(closes[ticker]) for ticker in shares)
     return shares, residual_cash, traded, fee
 
 
@@ -166,8 +161,7 @@ def run_momentum_backtest(prices: pd.DataFrame, config: BacktestConfig) -> Backt
         unavailable = sorted(ticker for ticker in shares if pd.isna(closes[ticker]))
         if unavailable:
             raise ValueError(
-                f"Missing prices for held securities on {today.date()}: "
-                + ", ".join(unavailable)
+                f"Missing prices for held securities on {today.date()}: " + ", ".join(unavailable)
             )
         old_values = {ticker: qty * float(closes[ticker]) for ticker, qty in shares.items()}
         gross_nav = cash + sum(old_values.values())
