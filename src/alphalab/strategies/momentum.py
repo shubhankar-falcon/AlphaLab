@@ -33,9 +33,7 @@ def screen_momentum(
     if df["ticker"].isna().any():
         raise ValueError("Tickers must not be null")
 
-    df = df.sort_values(["ticker", "date"]).drop_duplicates(
-        subset=["ticker", "date"], keep="last"
-    )
+    df = df.sort_values(["ticker", "date"]).drop_duplicates(subset=["ticker", "date"], keep="last")
     latest_date = df["date"].max()
     picks: list[dict[str, float | str]] = []
 
@@ -61,9 +59,7 @@ def screen_momentum(
     if not picks:
         return pd.DataFrame(columns=OUTPUT_COLUMNS)
 
-    result = pd.DataFrame(picks).sort_values(
-        ["momentum_pct", "ticker"], ascending=[False, True]
-    )
+    result = pd.DataFrame(picks).sort_values(["momentum_pct", "ticker"], ascending=[False, True])
     result = result.head(top_n).reset_index(drop=True)
     result.insert(0, "rank", range(1, len(result) + 1))
     return result.loc[:, OUTPUT_COLUMNS]
