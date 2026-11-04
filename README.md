@@ -1,81 +1,79 @@
 # AlphaLab 📈
 
-An educational Indian-stock research sandbox built to grow responsibly.
+An educational Indian-equities quant research lab. It is designed around a
+reproducible demo, modular data feeds, independently testable financial logic,
+and CI quality gates.
 
-**v0.2 adds an opt-in Yahoo Finance historical-price provider** alongside the existing
-reproducible synthetic demo. There is no live trading, order placement, backtesting,
-or investment recommendation engine.
+**v0.3 adds a monthly 12–1 momentum backtest in its own Streamlit page.**
+The main v0.2 stock screener is preserved, including both synthetic and real
+historical-data modes. There is no brokerage integration or live trading.
 
-## Start locally (Windows PowerShell or VS Code terminal)
+## Run locally (Windows PowerShell / VS Code)
 
-You need Python 3.11+ (Python 3.13 also works) and Git.
+Use Python 3.11+ (Python 3.13 works).
 
 ```powershell
 cd alphalab_starter
 python -m venv .venv
-.venv\Scripts\Activate.ps1
-python -m pip install --upgrade pip
+.\.venv\Scripts\Activate.ps1
 python -m pip install -e ".[dev]"
 python -m streamlit run app.py
 ```
 
-If `py -3.12` is unavailable but `python --version` reports 3.11+, use:
+For the first installation, follow the setup above. For future updates to the
+same repository, **do not recreate** `.venv`: activate the existing environment,
+then run `python -m pip install -e ".[dev]"` if dependencies changed.
+
+Open the **Backtesting Lab** page from Streamlit's page navigation on the left.
+The main page remains the stock screener.
+
+### Validate before committing
 
 ```powershell
-python -m venv .venv
+python -m ruff check .
+python -m ruff format --check .
+python -m pytest -v
 ```
 
-If PowerShell blocks script activation, either switch VS Code's terminal to Command Prompt
-and run `.venv\Scripts\activate.bat`, or run tools directly as:
+## Project structure
 
-```powershell
-.venv\Scripts\python.exe -m pip install -e ".[dev]"
-.venv\Scripts\python.exe -m streamlit run app.py
-```
+- `app.py` — v0.2 stock screener, the home page.
+- `pages/1_Backtesting_Lab.py` — v0.3 backtesting page.
+- `src/alphalab/data/` — reproducible demo and Yahoo historical-data adapters.
+- `src/alphalab/strategies/` — stock screening.
+- `src/alphalab/backtesting/engine.py` — reusable backtest engine.
+- `tests/` — fully offline automated unit tests.
+- `.github/workflows/ci.yml` — checks formatting, lint and tests on GitHub.
+- `docs/backtesting_v03.md` — full backtest methodology and assumptions.
 
-Streamlit displays a local URL, usually `http://localhost:8501`.
+## What the first backtest means
 
-## Verify quality
+Monthly, at an observed trading session `t`, rank stocks using adjusted price
+returns from `t-1-252` to `t-1-21` sessions (12–1 momentum). Allocate equally
+to the highest-ranked stocks at the session `t` adjusted close, simulate share
+holdings and subtract a flat transaction-cost estimate from both purchases and
+sales. Selections are based on *prior-day* data: trade-day price changes cannot
+influence the picks.
 
-```powershell
-python -m pytest -q
-ruff check .
-ruff format --check .
-```
+Displays portfolio value, total return, CAGR, annual volatility, Sharpe ratio
+(assuming 0% risk-free rate), maximum drawdown, monthly trades, fees, and
+selection history. Synthetic demo mode requires no internet; real historic
+Yahoo mode requests up to 5 years of daily data.
 
-For your first Git commit:
+**Do not treat these results as audited or investable strategy performance:**
+- The model uses a **current 20-name sample**, not a point-in-time historical
+  Nifty 500 universe. This creates substantial survivorship/selection bias.
+- Closing-price execution is idealized; the data uses retrospectively adjusted
+  closes. The cost approximation omits Indian statutory taxes, broker fees,
+  actual bid-ask spreads, and real slippage.
+- No official Nifty 500 **total return** benchmark is integrated yet.
+- No walk-forward or out-of-sample validation has been done.
+- Yahoo market data via `yfinance` is for **personal research**; do not
+  redistribute it as a public/commercial price-data service without a licence.
 
-```powershell
-git init
-git add .
-git commit -m "chore: bootstrap AlphaLab research sandbox"
-```
-
-## How it works
-
-1. `DemoPriceProvider` generates deterministic **fake** daily prices for 20 labelled NSE stocks.
-2. `YahooFinancePriceProvider` downloads historical split/dividend-adjusted daily closes
-   for the same symbol list in **personal research** mode; there is no live feed.
-3. `screen_momentum()` ranks stocks by trailing return over N available sessions.
-4. `app.py` exposes a data-source selector, a screener, and a price chart.
-5. Offline tests verify ranking and data-provider normalization without contacting Yahoo.
-
-See `docs/architecture.md` and `docs/roadmap.md`.
-
-## Market data, reliability, and licensing
-
-- **Demo** is the default and works completely offline.
-- **Yahoo (historical)** is opt-in, requires internet, and may omit symbols or return errors.
-- Prices are adjusted for splits and dividends, so they are suitable for comparing
-  historical returns but may not match historical exchange-traded closing prices.
-- Data is cached for one hour to reduce unnecessary requests. A Refresh button clears it.
-- Free Yahoo data accessed by `yfinance` is intended for **personal use only**.
-  Do not redistribute downloaded market data or launch a public-facing commercial
-  dashboard using this feed without appropriate data rights.
-- An official licensed broker/exchange data source can be substituted behind the
-  existing provider interface in a future version.
-- Strategy outputs are not recommendations or verified trading performance.
+For the complete calculation specification, see `docs/backtesting_v03.md`.
 
 ## Disclaimer
 
-Research/education software only. No personalized financial advice and no live trading.
+Education and personal market research only. Nothing in AlphaLab is trading
+advice, a prediction, or a system for accepting money or placing orders.

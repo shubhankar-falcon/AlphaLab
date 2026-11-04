@@ -1,11 +1,13 @@
-# Roadmap
+# AlphaLab roadmap
 
-- [x] v0.1: Installable project, reproducible demo prices, momentum screen, tests, CI
-- [x] v0.2: Opt-in personal-research historical-data adapter; caching and data-quality checks
-- [ ] v0.3: Strategy parameters, saved runs, exported rankings and methodology
-- [ ] v0.4: Point-in-time backtesting with no look-ahead, trading costs and a TRI benchmark
-- [ ] v0.5: Paper portfolio with positions, rebalance decisions, trades and an audit trail
-- [ ] v0.6: Risk dashboard (drawdown, volatility, rolling returns, turnover)
-- [ ] v1.0: Authentication, user-specific watchlists, deployment and observability if needed
+- [x] v0.1: Installable project, synthetic prices, momentum screener, tests, CI.
+- [x] v0.2: Yahoo historical research data, caching, quality checks.
+- [x] v0.3: Experimental forward-only monthly 12–1 momentum backtest, transaction
+  costs, risk metrics, rebalance logs, audit trail, offline tests.
+- [ ] v0.4: Historical point-in-time universe, corporate actions, official Nifty
+  500 TRI benchmark, realistic execution/taxes, and walk-forward evaluation.
+- [ ] v0.5: Paper portfolio with saved dated decisions and reproducible trades.
+- [ ] v0.6: Expanded risk dashboard (rolling Sharpe, factor exposures, stress tests).
+- [ ] v1.0: Licenced data, deployments and account features if a real need arises.
 
-Each stage is done only when its acceptance tests pass and its assumptions are documented.
+Do not equate an experimental backtest with a validated trading strategy.

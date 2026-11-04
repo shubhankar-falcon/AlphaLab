@@ -22,7 +22,8 @@ def load_yahoo_prices():
 
 
 st.title("AlphaLab")
-st.caption("Indian equities · Strategy research sandbox · v0.2")
+st.caption("Indian equities · Strategy research sandbox · v0.3")
+st.info("NEW: Open **Backtesting Lab** from the sidebar to run our first strategy simulation.")
 
 with st.sidebar:
     st.header("Screener settings")
