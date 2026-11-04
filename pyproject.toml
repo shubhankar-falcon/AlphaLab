@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "alphalab"
-version = "0.1.0"
+version = "0.2.0"
 description = "A transparent Indian equities research and paper-strategy lab"
 readme = "README.md"
 requires-python = ">=3.11"
@@ -12,6 +12,7 @@ dependencies = [
     "numpy>=1.26,<3",
     "pandas>=2.2,<4",
     "streamlit>=1.44,<2",
+    "yfinance>=1.7,<2",
 ]
 
 [project.optional-dependencies]

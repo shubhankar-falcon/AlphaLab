@@ -24,7 +24,7 @@ DEMO_TICKERS: tuple[str, ...] = (
     "SUNPHARMA.NS",
     "TITAN.NS",
     "NTPC.NS",
-    "TATAMOTORS.NS",
+    "TMPV.NS",
     "WIPRO.NS",
     "POWERGRID.NS",
 )

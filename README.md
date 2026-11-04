@@ -2,16 +2,17 @@
 
 An educational Indian-stock research sandbox built to grow responsibly.
 
-**v0.1 has one real feature:** a momentum screener working on **synthetic**, fixed-seed
-price data. No real stock market prices, orders, recommendations, or actual investment returns.
+**v0.2 adds an opt-in Yahoo Finance historical-price provider** alongside the existing
+reproducible synthetic demo. There is no live trading, order placement, backtesting,
+or investment recommendation engine.
 
 ## Start locally (Windows PowerShell or VS Code terminal)
 
-You need Python 3.11+ (3.12 recommended) and Git.
+You need Python 3.11+ (Python 3.13 also works) and Git.
 
 ```powershell
 cd alphalab_starter
-py -3.12 -m venv .venv
+python -m venv .venv
 .venv\Scripts\Activate.ps1
 python -m pip install --upgrade pip
 python -m pip install -e ".[dev]"
@@ -53,17 +54,27 @@ git commit -m "chore: bootstrap AlphaLab research sandbox"
 ## How it works
 
 1. `DemoPriceProvider` generates deterministic **fake** daily prices for 20 labelled NSE stocks.
-2. `screen_momentum()` ranks stocks by trailing return over N available sessions.
-3. `app.py` displays a screener table and a sample price chart.
-4. Automated tests verify ranking, price validation, stale data filtering and repeatability.
+2. `YahooFinancePriceProvider` downloads historical split/dividend-adjusted daily closes
+   for the same symbol list in **personal research** mode; there is no live feed.
+3. `screen_momentum()` ranks stocks by trailing return over N available sessions.
+4. `app.py` exposes a data-source selector, a screener, and a price chart.
+5. Offline tests verify ranking and data-provider normalization without contacting Yahoo.
 
 See `docs/architecture.md` and `docs/roadmap.md`.
 
-## Why not download real data automatically?
+## Market data, reliability, and licensing
 
-We want a reproducible offline development workflow first. For any future public or
-commercial service, verify market-data licensing and SEBI obligations. Free unofficial
-market-data libraries may be intended only for personal research, not redistribution.
+- **Demo** is the default and works completely offline.
+- **Yahoo (historical)** is opt-in, requires internet, and may omit symbols or return errors.
+- Prices are adjusted for splits and dividends, so they are suitable for comparing
+  historical returns but may not match historical exchange-traded closing prices.
+- Data is cached for one hour to reduce unnecessary requests. A Refresh button clears it.
+- Free Yahoo data accessed by `yfinance` is intended for **personal use only**.
+  Do not redistribute downloaded market data or launch a public-facing commercial
+  dashboard using this feed without appropriate data rights.
+- An official licensed broker/exchange data source can be substituted behind the
+  existing provider interface in a future version.
+- Strategy outputs are not recommendations or verified trading performance.
 
 ## Disclaimer
 

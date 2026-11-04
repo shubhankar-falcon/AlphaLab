@@ -13,7 +13,7 @@ Strategy functions (src/alphalab/strategies/)
        |
 PriceDataProvider interface (src/alphalab/data/provider.py)
        |
-Demo provider now -> licensed vendor / broker data provider later
+Demo provider | Yahoo historical research adapter | licensed vendor later
 ```
 
 - Strategy functions never request data over the network or place orders.
@@ -22,13 +22,16 @@ Demo provider now -> licensed vendor / broker data provider later
 - Unit tests exercise business rules without a UI and without network access.
 - No API server, microservices, or cloud database until a concrete need emerges.
 
-## Known limitations in v0.1
+## Known limitations in v0.2
 
-- Synthetic prices; symbol labels are real, but values are entirely fictitious.
-- Business-day date series ignores actual NSE exchange holidays.
-- No corporate-action adjustment, universe membership history or delisted symbols.
-- No missing-session gap detection beyond requiring same latest date.
+- Demo mode uses synthetic prices; Yahoo research mode uses historical adjusted closes.
+- Demo business-day dates ignore actual NSE holidays.
+- Yahoo adjusts for corporate actions but historical universe membership is not preserved.
+- No missing-session gap detection beyond requiring the same latest date.
 - No portfolio returns, transaction costs, portfolio turnover or look-ahead-proof rebalancing.
+
+Market data from Yahoo is intended for personal use; public market-price display requires
+appropriate data licensing. Network data is intentionally outside offline tests.
 
 ## Future production concerns
 
