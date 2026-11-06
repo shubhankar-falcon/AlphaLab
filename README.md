@@ -93,3 +93,23 @@ dates; return differences are descriptive, **not** proof of alpha.
 
 See [benchmark_v04.md](docs/benchmark_v04.md) for NSE CSV download steps,
 limitations and calculation details.
+
+## v0.5 — Forward Signal Journal
+
+Save immutable, timestamped momentum stock selections in local SQLite. A
+recorded signal is **not** a simulated trade. See
+[signal_journal_v05.md](docs/signal_journal_v05.md).
+
+## v0.6 — Forward-only Paper Portfolio
+
+Use the **Paper Portfolio** Streamlit page to convert a recorded Yahoo signal
+into a **pending** virtual buy plan, fill it no earlier than the next **completed**
+Indian trading session, and manually sync end-of-day holdings and P&L. The
+system uses unadjusted daily closes for hypothetical fills, whole shares,
+residual cash, an estimated fee and a local SQLite ledger. It does not place
+orders, silently backdate fills or continuously run in the background.
+
+This is still an experimental tool: **no split/dividend adjustments or tax-aware
+execution model**, so P&L cannot yet be considered institutional-grade or
+reliable across corporate actions. See
+[paper_portfolio_v06.md](docs/paper_portfolio_v06.md).
