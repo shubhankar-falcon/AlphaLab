@@ -113,3 +113,12 @@ This is still an experimental tool: **no split/dividend adjustments or tax-aware
 execution model**, so P&L cannot yet be considered institutional-grade or
 reliable across corporate actions. See
 [paper_portfolio_v06.md](docs/paper_portfolio_v06.md).
+
+## v0.7 — Risk Intelligence
+
+Open the new **Risk Intelligence** page to inspect historical momentum-strategy
+volatility, historical one-day VaR/expected shortfall, drawdowns, rolling risk,
+last-rebalance target allocation concentration and simple shock scenarios.
+Risk calculations are **offline-testable**, do not modify the Paper Portfolio,
+and do not represent future loss predictions or current portfolio holdings.
+See [risk_intelligence_v07.md](docs/risk_intelligence_v07.md).
