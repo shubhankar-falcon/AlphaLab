@@ -78,7 +78,8 @@ def _account(conn: sqlite3.Connection, account_id: int) -> dict:
     result["signal"] = json.loads(result["signal_json"])
     fills = conn.execute(
         "SELECT ticker, fill_date, quantity, raw_close, gross_inr, estimated_cost_inr "
-        "FROM paper_fills WHERE account_id = ? ORDER BY ticker", (account_id,)
+        "FROM paper_fills WHERE account_id = ? ORDER BY ticker",
+        (account_id,),
     ).fetchall()
     result["fills"] = [dict(fill) for fill in fills]
     return result
@@ -139,8 +140,7 @@ def create_paper_account(
     now = datetime.now(UTC).isoformat(timespec="seconds")
     with _db(Path(path)) as conn:
         existing = conn.execute(
-            "SELECT id, signal_sha256 FROM paper_accounts WHERE journal_signal_id = ?",
-            (signal_id,)
+            "SELECT id, signal_sha256 FROM paper_accounts WHERE journal_signal_id = ?", (signal_id,)
         ).fetchone()
         if existing is not None:
             if existing["signal_sha256"] != digest:
@@ -156,9 +156,16 @@ def create_paper_account(
                status, fill_date, created_at_utc
                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, 'pending', NULL, ?)""",
             (
-                signal_id, saved_signal["source"], recorded.isoformat(),
-                observed.isoformat(), digest, payload, float(initial_cash),
-                float(cost_bps), float(initial_cash), now,
+                signal_id,
+                saved_signal["source"],
+                recorded.isoformat(),
+                observed.isoformat(),
+                digest,
+                payload,
+                float(initial_cash),
+                float(cost_bps),
+                float(initial_cash),
+                now,
             ),
         )
         return int(cur.lastrowid), True
@@ -259,11 +266,16 @@ def settle_pending_paper_account(
             gross = qty * px
             fees = gross * fee_rate
             total_debit += gross + fees
-            fills.append({
-                "ticker": ticker, "fill_date": session.date().isoformat(),
-                "quantity": qty, "raw_close": px,
-                "gross_inr": gross, "estimated_cost_inr": fees,
-            })
+            fills.append(
+                {
+                    "ticker": ticker,
+                    "fill_date": session.date().isoformat(),
+                    "quantity": qty,
+                    "raw_close": px,
+                    "gross_inr": gross,
+                    "estimated_cost_inr": fees,
+                }
+            )
         cash_after = budget - total_debit
         if cash_after < -0.000001:
             raise ValueError("Orders cost more than available paper cash")
@@ -273,8 +285,15 @@ def settle_pending_paper_account(
                    account_id, ticker, fill_date, quantity, raw_close,
                    gross_inr, estimated_cost_inr
                    ) VALUES (?, ?, ?, ?, ?, ?, ?)""",
-                (account_id, f["ticker"], f["fill_date"], f["quantity"],
-                 f["raw_close"], f["gross_inr"], f["estimated_cost_inr"]),
+                (
+                    account_id,
+                    f["ticker"],
+                    f["fill_date"],
+                    f["quantity"],
+                    f["raw_close"],
+                    f["gross_inr"],
+                    f["estimated_cost_inr"],
+                ),
             )
         conn.execute(
             "UPDATE paper_accounts SET status='active', fill_date=?, cash_after=? WHERE id=?",
@@ -314,12 +333,16 @@ def mark_paper_account(
         last_px = float(marks[ticker])
         value = int(f["quantity"]) * last_px
         market_value += value
-        holdings.append({
-            "ticker": ticker, "shares": int(f["quantity"]),
-            "entry_price": float(f["raw_close"]), "last_close": last_px,
-            "market_value_inr": value,
-            "unrealized_pnl_inr": value - float(f["gross_inr"]),
-        })
+        holdings.append(
+            {
+                "ticker": ticker,
+                "shares": int(f["quantity"]),
+                "entry_price": float(f["raw_close"]),
+                "last_close": last_px,
+                "market_value_inr": value,
+                "unrealized_pnl_inr": value - float(f["gross_inr"]),
+            }
+        )
     nav = float(account["cash_after"]) + market_value
     initial = float(account["initial_cash"])
     return {
@@ -335,9 +358,7 @@ def mark_paper_account(
 
 def paper_trades_to_csv(account: dict) -> str:
     out = io.StringIO()
-    fields = [
-        "ticker", "fill_date", "quantity", "raw_close", "gross_inr", "estimated_cost_inr"
-    ]
+    fields = ["ticker", "fill_date", "quantity", "raw_close", "gross_inr", "estimated_cost_inr"]
     writer = csv.DictWriter(out, fieldnames=fields)
     writer.writeheader()
     writer.writerows(account["fills"])

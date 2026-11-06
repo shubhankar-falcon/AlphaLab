@@ -47,9 +47,7 @@ def raw_prices():
 
 def create_account(tmp_path, signal, **kwargs):
     path = tmp_path / "paper.sqlite3"
-    number, created = create_paper_account(
-        path, signal, initial_cash=1000, cost_bps=100, **kwargs
-    )
+    number, created = create_paper_account(path, signal, initial_cash=1000, cost_bps=100, **kwargs)
     assert created
     return path, number
 
@@ -112,9 +110,7 @@ def test_first_later_completed_common_close(tmp_path, signal, raw_prices):
     )
     assert result["status"] == "active"
     assert result["fill_date"] == "2026-11-09"
-    assert {p["ticker"]: p["quantity"] for p in result["fills"]} == {
-        "AAA.NS": 24, "BBB.NS": 12
-    }
+    assert {p["ticker"]: p["quantity"] for p in result["fills"]} == {"AAA.NS": 24, "BBB.NS": 12}
     assert result["cash_after"] == pytest.approx(30.4)
     assert sum(p["estimated_cost_inr"] for p in result["fills"]) == pytest.approx(9.6)
 
@@ -133,9 +129,7 @@ def test_marks_latest_completed_date_only(tmp_path, signal, raw_prices):
     account = settle_pending_paper_account(
         db, number, raw_prices, now_utc=datetime(2026, 11, 11, 3, tzinfo=UTC)
     )
-    valued = mark_paper_account(
-        account, raw_prices, now_utc=datetime(2026, 11, 11, 4, tzinfo=UTC)
-    )
+    valued = mark_paper_account(account, raw_prices, now_utc=datetime(2026, 11, 11, 4, tzinfo=UTC))
     assert valued["mark_date"] == "2026-11-10"
     assert valued["nav_inr"] == pytest.approx(1050.4)
     assert valued["return_pct"] == pytest.approx(5.04)
@@ -148,9 +142,7 @@ def test_future_close_not_used_before_completion(tmp_path, signal, raw_prices):
     account = settle_pending_paper_account(
         db, number, raw_prices, now_utc=datetime(2026, 11, 10, 4, tzinfo=UTC)
     )
-    valued = mark_paper_account(
-        account, raw_prices, now_utc=datetime(2026, 11, 10, 4, tzinfo=UTC)
-    )
+    valued = mark_paper_account(account, raw_prices, now_utc=datetime(2026, 11, 10, 4, tzinfo=UTC))
     assert valued["mark_date"] == "2026-11-09"
     assert valued["nav_inr"] == pytest.approx(990.4)  # fee drag
 
@@ -217,8 +209,8 @@ def test_reused_journal_id_with_new_content_rejected(tmp_path, signal):
 
 
 def test_raw_price_provider_requests_unadjusted_closes(monkeypatch):
-    from types import SimpleNamespace
     import sys
+    from types import SimpleNamespace
 
     from alphalab.paper.market import fetch_yahoo_raw_closes
 
@@ -227,9 +219,7 @@ def test_raw_price_provider_requests_unadjusted_closes(monkeypatch):
     def fake_download(**kwargs):
         captured.update(kwargs)
         dates = pd.to_datetime(["2026-11-06", "2026-11-09"])
-        return pd.DataFrame(
-            {("AAA.NS", "Close"): [50.0, 55.0]}, index=dates
-        )
+        return pd.DataFrame({("AAA.NS", "Close"): [50.0, 55.0]}, index=dates)
 
     monkeypatch.setitem(sys.modules, "yfinance", SimpleNamespace(download=fake_download))
     observed = fetch_yahoo_raw_closes(("AAA.NS",), "1mo")

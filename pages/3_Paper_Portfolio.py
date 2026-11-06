@@ -54,19 +54,27 @@ else:
     )
     with st.form("create_paper_plan"):
         starting_cash = st.number_input(
-            "Starting paper cash (₹)", min_value=5_000.0, max_value=10_000_000.0,
-            value=100_000.0, step=5_000.0,
+            "Starting paper cash (₹)",
+            min_value=5_000.0,
+            max_value=10_000_000.0,
+            value=100_000.0,
+            step=5_000.0,
         )
         bps = st.number_input(
-            "Estimated cost per buy (bps)", min_value=0.0,
-            max_value=1000.0, value=10.0, step=5.0,
+            "Estimated cost per buy (bps)",
+            min_value=0.0,
+            max_value=1000.0,
+            value=10.0,
+            step=5.0,
         )
         submitted = st.form_submit_button("Create pending paper orders", type="primary")
     if submitted:
         try:
             account_id, created = create_paper_account(
-                PAPER_PATH, signal_map[selected_id],
-                initial_cash=float(starting_cash), cost_bps=float(bps),
+                PAPER_PATH,
+                signal_map[selected_id],
+                initial_cash=float(starting_cash),
+                cost_bps=float(bps),
             )
         except ValueError as exc:
             st.error(f"Cannot create paper portfolio: {exc}")
@@ -111,16 +119,22 @@ else:
     st.success(f"Simulated initial purchases dated {account['fill_date']}.")
     st.dataframe(pd.DataFrame(account["fills"]), use_container_width=True, hide_index=True)
     st.download_button(
-        "Export simulated fills CSV", data=paper_trades_to_csv(account),
-        file_name=f"alphalab_paper_{account_id}.csv", mime="text/csv",
+        "Export simulated fills CSV",
+        data=paper_trades_to_csv(account),
+        file_name=f"alphalab_paper_{account_id}.csv",
+        mime="text/csv",
     )
 
 if st.button("Sync completed closes and update paper portfolios"):
-    symbols = tuple(sorted({
-        f["ticker"] for a in accounts for f in (
-            a["fills"] if a["status"] == "active" else a["signal"]["picks"]
+    symbols = tuple(
+        sorted(
+            {
+                f["ticker"]
+                for a in accounts
+                for f in (a["fills"] if a["status"] == "active" else a["signal"]["picks"])
+            }
         )
-    }))
+    )
     market_prices.clear()
     try:
         raw_prices = market_prices(symbols)
@@ -154,7 +168,8 @@ if account["status"] == "active":
             c4.metric("Cash remaining", f"₹{valuation['cash_inr']:,.2f}")
             st.dataframe(
                 pd.DataFrame(valuation["holdings"]),
-                use_container_width=True, hide_index=True,
+                use_container_width=True,
+                hide_index=True,
             )
 
 st.warning(
