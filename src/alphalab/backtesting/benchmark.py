@@ -142,9 +142,9 @@ def compare_to_benchmark(
         raise ValueError("Strategy equity dates must be unique and sorted")
     if dates[0] < b.index[0] or dates[-1] > b.index[-1]:
         raise ValueError(
-            "Benchmark history must cover the full strategy period "
-            f"({dates[0].date()} through {dates[-1].date()}); "
-            "download a wider date range from NSE Indices"
+            "Benchmark history must cover the full strategy period. "
+            f"Strategy: {dates[0].date()} to {dates[-1].date()} | "
+            f"Uploaded TRI: {b.index[0].date()} to {b.index[-1].date()}"
         )
     coverage = float(dates.isin(b.index).mean())
     if coverage < 0.98:
